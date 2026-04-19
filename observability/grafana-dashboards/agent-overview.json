@@ -1,0 +1,61 @@
+{
+  "annotations": { "list": [{ "builtIn": 1, "datasource": { "type": "grafana", "uid": "-- Grafana --" }, "enable": true, "hide": true, "iconColor": "rgba(0, 211, 255, 1)", "name": "Annotations & Alerts", "type": "dashboard" }] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "tooltip": { "mode": "single" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(http_requests_total{handler=\"/api/v1/chat\"}[1m])", "legendFormat": "Requests/sec", "refId": "A" }
+      ],
+      "title": "Agent Request Rate (RPS)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 5.0 }] }, "unit": "s" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "options": { "colorMode": "value", "graphMode": "area" },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{handler=\"/api/v1/chat\"}[5m]))", "legendFormat": "P95 Latency", "refId": "A" }
+      ],
+      "title": "P95 Response Latency",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 8 },
+      "id": 3,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "loki" }, "expr": "{job=\"varlogs\"} |= `session_id`", "refId": "A" }
+      ],
+      "title": "Agent Structured Logs (Loki)",
+      "type": "logs"
+    },
+    {
+      "datasource": { "type": "jaeger", "uid": "jaeger" },
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 18 },
+      "id": 4,
+      "options": { "content": "### 🔍 Distributed Tracing (Jaeger)\nВсе трейсы доступны в [Jaeger UI](http://localhost:16686)\n\nService: `course-ai-assistant`", "mode": "markdown" },
+      "title": "Tracing Quick Link",
+      "type": "text"
+    }
+  ],
+  "schemaVersion": 38,
+  "tags": ["ai-agents", "observability"],
+  "templating": { "list": [] },
+  "time": { "from": "now-15m", "to": "now" },
+  "title": "AI Agent Observability Overview",
+  "uid": "ai-agent-obs-v1",
+  "version": 1
+}
